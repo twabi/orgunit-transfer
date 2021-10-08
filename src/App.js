@@ -76,7 +76,7 @@ function App(props) {
         "shortName": unit.shortName,
         "openingDate": unit.openingDate,
         "parent":{
-          "id": unit.parent.id
+          "id": selectedInstance==="NamisDemo" ? unit.parent.id : unit.parent
         },
         "lastUpdatedBy":{
           "id": unit.lastUpdatedBy.id
@@ -87,8 +87,9 @@ function App(props) {
         "translations": unit.translations
       }
 
+
       /*
-      var payload = {
+      var corrLoad = {
         "ancestors": unit.ancestors,
         "attributeValues": unit.attributeValues,
         "created": String(unit.created),
@@ -116,7 +117,17 @@ function App(props) {
         "createdBy":{
           "id": unit.createdBy.id
         },
-      }*/
+      }
+
+      let payload;
+
+      if(selectedInstance === "Correctiveinstance"){
+        payload = corrLoad;
+      }else {
+        payload = schemaLoad;
+      }
+
+       */
 
 
       //console.log(schemaLoad);
@@ -156,6 +167,10 @@ function App(props) {
                 setStatus(100);
               }, 2000);
 
+            }else if(response.status === 409){
+              setMessageText("Error code: 409. A conflict occurred. ");
+              setStatusText("exception");
+              setStatus(100);
             } else {
               setMessageText("Unable to post org units due to an error");
               setStatusText("exception");
@@ -173,7 +188,6 @@ function App(props) {
         } //
       });
     }
-
 
 
   }
