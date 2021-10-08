@@ -10,6 +10,7 @@ const LoadData = (props) => {
     const [D2, setD2] = React.useState();
     const [initAuth, setInitAuth] = useState(props.auth);
     const [orgUnits, setOrgUnits] = React.useState([]);
+    const [unitGroups, setUnitGroups] = React.useState([]);
 
     React.useEffect(() => {
         setInitAuth(props.auth);
@@ -18,6 +19,28 @@ const LoadData = (props) => {
             setD2(d2);
             const unitEndpoint = "organisationUnits.json?paging=false&fields=*";
             const orgEndpoint = "organisationUnitGroups.json?fields=id,displayName,organisationUnits&paging=false";
+
+            fetch(`https://covmw.com/namisdemo/api/${orgEndpoint}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization' : props.auth,
+                    'Content-type': 'application/json',
+                },
+                credentials: "include"
+
+            }).then(result => result.json()).then((response) => {
+                console.log(response);
+                var tempArray = [];
+                response.organisationUnitGroups.map((item) => {
+                    if(item.displayName.includes("Stratum")){
+                        tempArray.push(item);
+                    }
+                })
+                setUnitGroups(tempArray);
+            }).catch((error) => {
+                console.log(error);
+                alert("An error occurred: " + error);
+            });
 
             d2.Api.getApi().get(unitEndpoint).then((response) => {
                 var tempArray = []
@@ -47,10 +70,9 @@ const LoadData = (props) => {
 
                 console.log(tree);
                 setOrgUnits(tree)
-            })
-                .catch((error) => {
-                    console.log(error);
-                    alert("An error occurred: " + error);
+            }).catch((error) => {
+                console.log(error);
+                alert("An error occurred: " + error);
             });
         });
 
@@ -65,6 +87,7 @@ const LoadData = (props) => {
                              auth={initAuth}
                              d2={D2}
                              orgUnits={orgUnits}
+                             unitGroups={unitGroups}
                         />
                     )} exact/>
                 </Switch>

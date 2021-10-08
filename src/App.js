@@ -1,7 +1,7 @@
 import {Col, Divider, Modal, Progress, Row, TreeSelect} from "antd";
 import {useEffect, useState} from "react";
 import HeaderBar from "@dhis2/d2-ui-header-bar"
-import {Button, Pane, SelectField, Text, TextInputField} from "evergreen-ui";
+import {Button, Pane, SelectField, SelectMenu, Text, TextInputField} from "evergreen-ui";
 import './App.css';
 
 function App(props) {
@@ -17,6 +17,8 @@ function App(props) {
   const [treeMarkets, setTreeMarkets] = useState(props.orgUnits);
   const [treeValue, setTreeValue] = useState();
   const [flattenedUnits, setFlattenedUnits] = useState([]);
+  const [unitGroups, setUnitGroups] = useState(props.unitGroups);
+  const [selectedInstance, setSelectedInstance] = useState("NamisDemo")
 
   let extractChildren = x => x.children;
   let flatten = (children, getChildren, level, parent) => Array.prototype.concat.apply(
@@ -48,6 +50,7 @@ function App(props) {
   };
 
   useEffect(() => {
+    setUnitGroups(props.unitGroups);
     setAuth(props.auth);
     setD2(props.d2);
     setTreeMarkets(props.orgUnits);
@@ -108,9 +111,59 @@ function App(props) {
         },
       }
 
+      setStatus(10);
+      setMessageText("Posting children of " + unit.displayName);
+      setStatusText("normal");
+
 
       console.log(schemaLoad);
       console.log(payload);
+
+      fetch(schemaPoint, {
+        method: 'POST',
+        body: JSON.stringify(schemaLoad),
+        headers: {
+          'Authorization' : auth,
+          'Content-type': 'application/json',
+        },
+        credentials: "include"
+
+      }).then((response) => {
+        if(response.status === 200 || response.status === 201){
+          setStatus(65);
+
+          fetch(unitPoint, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+              'Authorization' : auth,
+              'Content-type': 'application/json',
+            },
+            credentials: "include"
+
+          }).then((response) => {
+
+            console.log(response);
+            if(response.status === 200 || response.status === 201){
+              setTimeout(() => {
+                setMessageText("Org Unit posted");
+                setStatusText("success");
+                setStatus(100);
+              }, 2000);
+
+            }else if(response.status === 409 ){
+              setMessageText("Org Unit already exists on the server");
+              setStatusText("exception");
+              setStatus(100);
+
+            } else {
+              setMessageText("Unable to post org units due to an error");
+              setStatusText("exception");
+              setStatus(100);
+            }
+          })
+        } //
+      });
 
     });
 
@@ -143,37 +196,72 @@ function App(props) {
                 alignItems="center"
                 flexDirection="column"
             >
-              <h5>
-                <strong>Org Units Transfer</strong>
-              </h5>
+              <div>
+                <h5>
+                  <strong>Org Units Transfer</strong>
+                </h5>
 
-              <Text size={500}>
-                <strong>Select organizational Unit group</strong>
-              </Text>
+                <Text size={500}>
+                  <strong>Select organizational Unit group</strong>
+                </Text>
+              </div>
 
               <Divider className="mx-2" plain/>
 
               <Row className="w-75 mt-3">
-                <Col span={24} className="p-3 text-left">
-                  <label className="grey-text ml-2">
-                    <>Select Organization Unit</>
-                    {props.orgUnits.length === 0 ? <div className="spinner-border mx-2 indigo-text spinner-border-sm" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div> : null}
-                  </label>
-                  <TreeSelect
-                      style={{ width: '100%' }}
-                      value={treeValue}
-                      className="mt-2"
-                      dropdownStyle={{ maxHeight: 400, overflow: 'auto'}}
-                      treeData={treeMarkets}
-                      allowClear
-                      size="large"
-                      placeholder="Please select organizational unit"
-                      onChange={handleTree}
-                      onSelect={onSelectTree}
-                      showSearch={true}
-                  />
+                <Col span={12} className="p-3 text-left">
+                  <SelectField width="100%"
+                               label="Select organization Unit Group"
+                               description="Select the stratum whose children you wish to change"
+                               value={selectedInstance}
+                               onChange={e => setSelectedInstance(e.target.value)}>
+                    {['NamisDemo', 'Correctiveinstance'].map((item) => (
+                        <option value={item} selected={selectedInstance === item}>
+                          {item}
+                        </option>
+                    ))}
+
+                  </SelectField>
+                </Col>
+
+                <Col span={12} className="p-3 text-left">
+                  {selectedInstance === "NamisDemo" ?
+                      <SelectField width="100%"
+                                   label="Select DHIS2 Instance"
+                                   description="Select the instance to transfer orgUnits from"
+                                   value={selectedUnit&&selectedUnit.displayName}
+                                   onChange={e => setSelectedUnit(e.target.value)}>
+                        {unitGroups&&unitGroups.map((unit) => (
+                            <option value={unit.id} selected={selectedUnit&&selectedUnit.id === unit.id}>
+                              {unit.displayName}
+                            </option>
+                        ))}
+
+                      </SelectField>
+                  :
+                      <>
+                        <label className="grey-text ml-2">
+                          <>Select Organization Unit</>
+                          {props.orgUnits.length === 0 ? <div className="spinner-border mx-2 indigo-text spinner-border-sm" role="status">
+                            <span className="sr-only">Loading...</span>
+                          </div> : null}
+                        </label>
+                        <TreeSelect
+                            style={{ width: '100%' }}
+                            value={treeValue}
+                            className="mt-2"
+                            dropdownStyle={{ maxHeight: 400, overflow: 'auto'}}
+                            treeData={treeMarkets}
+                            allowClear
+                            size="large"
+                            placeholder="Please select organizational unit"
+                            onChange={handleTree}
+                            onSelect={onSelectTree}
+                            showSearch={true}
+                        />
+                      </>
+                  }
+
                 </Col>
 
               </Row>
