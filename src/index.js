@@ -14,11 +14,11 @@ import LoadData from "./LoadData";
 const initialAuth = "Basic " + btoa(":");
 
 
-const developmentServer = "https://covmw.com/namisdemo/api/";
+const developmentServer = "https://covmw.com/correctiveInstance/api/";
 export const withBaseUrl = (baseUrl, initialAuth) => {
 
     const appConfig = {
-        baseUrl: 'https://covmw.com/namisdemo/',
+        baseUrl: 'https://covmw.com/correctiveInstance/',
         apiVersion: 0,
         headers:{
             Authorization: initialAuth,
@@ -44,7 +44,7 @@ export const withBaseUrl = (baseUrl, initialAuth) => {
         , document.getElementById("root"));
 };
 
-fetch("https://covmw.com/namisdemo/api", {
+fetch("https://covmw.com/correctiveInstance/api", {
     method: 'GET',
     headers: {
         'Authorization' : initialAuth,

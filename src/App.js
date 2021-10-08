@@ -16,6 +16,17 @@ function App(props) {
   const [textValue, setTextValue] = useState(null);
   const [auth, setAuth] = useState(props.auth);
 
+  const handleCancel = () => {
+    setAlertModal(false);
+  };
+
+  useEffect(() => {
+    setAuth(props.auth);
+    setD2(props.d2);
+    setOrgUnits(props.orgUnits);
+
+  },[props]);
+
   const handlePost =()=>{
 
   }
@@ -46,11 +57,11 @@ function App(props) {
                 flexDirection="column"
             >
               <h5>
-                <strong>Stratum Name Update</strong>
+                <strong>Org Units Transfer</strong>
               </h5>
 
               <Text size={500}>
-                <strong>Select Stratum and enter replacement text</strong>
+                <strong>Select organizational Unit group</strong>
               </Text>
 
               {[].length !== 0 ? <div className="spinner-border mx-2 indigo-text spinner-border-sm" role="status">
