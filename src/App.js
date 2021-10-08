@@ -56,6 +56,66 @@ function App(props) {
 
   const handlePost =()=>{
     console.log(flattenedUnits);
+    var schemaPoint = "https://covmw.com/namistest/api/29/schemas/organisationUnit";
+    var unitPoint = "https://covmw.com/namistest/api/29/organisationUnits";
+
+    flattenedUnits.map((unit) => {
+      var schemaLoad = {
+        attributeValues: unit.attributeValues,
+        lastUpdated: unit.lastUpdated,
+        name: unit.name,
+        openingDate: unit.openingDate,
+        parent: {id: unit.parent},
+        shortName: unit.shortName,
+        path: unit.path,
+        created: unit.created,
+        lastUpdatedBy:{
+          id: unit.lastUpdatedBy.id
+        },
+        createdBy:{
+          id: unit.createdBy.id
+        },
+        translations: unit.translations
+      }
+
+      var payload = {
+        ancestors: unit.ancestors,
+        attributeValues: unit.attributeValues,
+        created: unit.created,
+        dataSets: unit.dataSets,
+        dimensionItem: unit.dimensionItem,
+        dimensionItemType: unit.dimensionItemType,
+        displayFormName: unit.displayFormName,
+        displayName: unit.displayName,
+        displayShortName: unit.displayShortName,
+        id: unit.id,
+        lastUpdated: unit.lastUpdated,
+        level: unit.level,
+        name: unit.name,
+        openingDate: unit.openingDate,
+        organisationUnitGroups: unit.organisationUnitGroups,
+        parent: unit.parent,
+        path: unit.path,
+        periodOffset: unit.periodOffset,
+        programs: unit.programs,
+        shortName: unit.shortName,
+        translations: unit.translations,
+        lastUpdatedBy:{
+          id: unit.lastUpdatedBy.id
+        },
+        createdBy:{
+          id: unit.createdBy.id
+        },
+      }
+
+
+      console.log(schemaLoad);
+      console.log(payload);
+
+    });
+
+
+
   }
 
   return (
@@ -91,16 +151,15 @@ function App(props) {
                 <strong>Select organizational Unit group</strong>
               </Text>
 
-              {[].length !== 0 ? <div className="spinner-border mx-2 indigo-text spinner-border-sm" role="status">
-                <span className="sr-only">Loading...</span>
-              </div> : null}
-
               <Divider className="mx-2" plain/>
 
               <Row className="w-75 mt-3">
                 <Col span={24} className="p-3 text-left">
                   <label className="grey-text ml-2">
-                    <strong>Select Organization Unit</strong>
+                    <>Select Organization Unit</>
+                    {props.orgUnits.length === 0 ? <div className="spinner-border mx-2 indigo-text spinner-border-sm" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div> : null}
                   </label>
                   <TreeSelect
                       style={{ width: '100%' }}

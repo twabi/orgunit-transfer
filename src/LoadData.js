@@ -16,25 +16,31 @@ const LoadData = (props) => {
 
         getInstance().then((d2) => {
             setD2(d2);
-            const unitEndpoint = "organisationUnits.json?paging=false&fields=name&fields=level&fields=id&fields=parent";
+            const unitEndpoint = "organisationUnits.json?paging=false&fields=*";
             const orgEndpoint = "organisationUnitGroups.json?fields=id,displayName,organisationUnits&paging=false";
 
             d2.Api.getApi().get(unitEndpoint).then((response) => {
+                var tempArray = []
                 response.organisationUnits.map((item, index) => {
                     //
-                    //making sure every org unit has a parent node, if not set it to undefined
-                    item.title = item.name;
-                    item.value = item.name.replace(/ /g, "") + "-" + index;
-                    if(item.parent != null){
-                        //console.log(item.parent.id)
-                        item.parent = item.parent.id
+                    if(item.level === 1 || item.level === 2){
+                        console.log("not this");
                     } else {
-                        item.parent = undefined
+                        //making sure every org unit has a parent node, if not set it to undefined
+                        item.title = item.name;
+                        item.value = item.name.replace(/ /g, "") + "-" + index;
+                        if(item.parent != null){
+                            //console.log(item.parent.id)
+                            item.parent = item.parent.id
+                        } else {
+                            item.parent = undefined
+                        }
+                        tempArray.push(item);
                     }
                 });
 
                 //do the array-to-tree thing using the parent and id fields in each org unit
-                var tree = arrayToTree(response.organisationUnits, {
+                var tree = arrayToTree(tempArray, {
                     parentProperty: 'parent',
                     customID: 'id'
                 });
