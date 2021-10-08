@@ -3,7 +3,7 @@ import {Form, Input, Button, Modal} from 'antd';
 import {withBaseUrl} from "./index";
 import {Text} from "evergreen-ui";
 
-var url = "https://covmw.com/correctiveInstance/"
+var url = "https://covmw.com/correctiveinstance/"
 
 const LoginModal = () => {
     const [visible, setVisible] = React.useState(true);

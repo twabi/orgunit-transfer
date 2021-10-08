@@ -3,6 +3,8 @@ import {getInstance} from "d2";
 import {Switch, Route} from "react-router-dom";
 import App from "./App";
 
+//initializing an array-to-tree library that will turn an array of org units into a tree form
+var arrayToTree = require("array-to-tree");
 const LoadData = (props) => {
 
     const [D2, setD2] = React.useState();
@@ -14,11 +16,31 @@ const LoadData = (props) => {
 
         getInstance().then((d2) => {
             setD2(d2);
+            const unitEndpoint = "organisationUnits.json?paging=false&fields=name&fields=level&fields=id&fields=parent";
             const orgEndpoint = "organisationUnitGroups.json?fields=id,displayName,organisationUnits&paging=false";
 
-            d2.Api.getApi().get(orgEndpoint).then((response) => {
-                console.log(response.organisationUnitGroups);
-                setOrgUnits(response.organisationUnitGroups);
+            d2.Api.getApi().get(unitEndpoint).then((response) => {
+                response.organisationUnits.map((item, index) => {
+                    //
+                    //making sure every org unit has a parent node, if not set it to undefined
+                    item.title = item.name;
+                    item.value = item.name.replace(/ /g, "") + "-" + index;
+                    if(item.parent != null){
+                        //console.log(item.parent.id)
+                        item.parent = item.parent.id
+                    } else {
+                        item.parent = undefined
+                    }
+                });
+
+                //do the array-to-tree thing using the parent and id fields in each org unit
+                var tree = arrayToTree(response.organisationUnits, {
+                    parentProperty: 'parent',
+                    customID: 'id'
+                });
+
+                console.log(tree);
+                setOrgUnits(tree)
             })
                 .catch((error) => {
                     console.log(error);

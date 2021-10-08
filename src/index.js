@@ -14,11 +14,11 @@ import LoadData from "./LoadData";
 const initialAuth = "Basic " + btoa(":");
 
 
-const developmentServer = "https://covmw.com/correctiveInstance/api/";
+const developmentServer = "https://covmw.com/correctiveinstance/api/";
 export const withBaseUrl = (baseUrl, initialAuth) => {
 
     const appConfig = {
-        baseUrl: 'https://covmw.com/correctiveInstance/',
+        baseUrl: 'https://covmw.com/correctiveinstance/',
         apiVersion: 0,
         headers:{
             Authorization: initialAuth,
@@ -44,7 +44,7 @@ export const withBaseUrl = (baseUrl, initialAuth) => {
         , document.getElementById("root"));
 };
 
-fetch("https://covmw.com/correctiveInstance/api", {
+fetch("https://covmw.com/correctiveinstance/api", {
     method: 'GET',
     headers: {
         'Authorization' : initialAuth,
