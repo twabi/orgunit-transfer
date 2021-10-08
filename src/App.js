@@ -40,7 +40,9 @@ function App(props) {
 
     if(children === undefined){
       setFlattenedUnits([node]);
-    } else {
+    } else if(children.length === 0){
+      setFlattenedUnits([node]);
+    }else {
       let flat = flatten(extractChildren(node), extractChildren, node.level, node.parent)
           .map(x => delete x.children && x);
       //console.log(flat)
